@@ -39,7 +39,7 @@ Hai T4 chạy **hai tiến trình độc lập**: GPU 0 chạy Random, GPU 1 ch�
 
 Mở **`kaggle_train.ipynb`**, bật Internet và GPU T4 ×2. Gắn bộ benchmark RSTPReid, rồi chạy các cell theo thứ tự.
 
-Repo private tại `https://github.com/lqb464/clip-balanced-mixed`. Trong Kaggle Add-ons → Secrets, thêm `GH_TOKEN` có quyền đọc repo này và bật quyền cho notebook. Token chỉ dùng trong môi trường của tiến trình clone, không ghi vào file hay URL remote.
+Repo public tại `https://github.com/lqb464/clip-balanced-mixed`. Notebook clone trực tiếp, không cần token hay cấu hình Kaggle Secrets.
 
 Notebook mặc định dataset ở:
 
