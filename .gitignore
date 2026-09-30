@@ -8,3 +8,4 @@ cache/
 *.pth
 *.npz
 .env
+.DS_Store

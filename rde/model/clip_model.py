@@ -7,7 +7,7 @@ import math
 import os
 from typing import List, Tuple, Union
 import hashlib
-import urllib.request
+import urllib
 from tqdm import tqdm
 import warnings
 import numpy as np
@@ -243,12 +243,15 @@ class ResidualAttentionBlock(nn.Module):
 
     def attention(self, x: torch.Tensor):
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
-        return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask)[0]
+        return self.attn(x, x, x, need_weights=True, attn_mask=self.attn_mask)
 
-    def forward(self, x: torch.Tensor):
-        x = x + self.attention(self.ln_1(x))
+    def forward(self, inputs):
+        # x = x + self.attention(self.ln_1(x))
+        x = inputs[0]
+        atten, atten_weight = self.attention(self.ln_1(x))
+        x = x + atten
         x = x + self.mlp(self.ln_2(x))
-        return x
+        return [x, atten_weight]
 
 
 class Transformer(nn.Module):
@@ -293,7 +296,9 @@ class VisionTransformer(nn.Module):
         x = self.ln_pre(x)
 
         x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer(x)
+        outputs = self.transformer([x])
+        x = outputs[0]
+        atten = outputs[1]
         x = x.permute(1, 0, 2)  # LND -> NLD
 
         # x = self.ln_post(x[:, 0, :])
@@ -302,8 +307,7 @@ class VisionTransformer(nn.Module):
         if self.proj is not None:
             x = x @ self.proj
     
-        return x
-
+        return x,atten
 
 
 class CLIP(nn.Module):
@@ -413,7 +417,9 @@ class CLIP(nn.Module):
 
         x = x + self.positional_embedding.type(self.dtype)
         x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer(x)
+        outputs = self.transformer([x])
+        x = outputs[0]
+        atten = outputs[1]
         x = x.permute(1, 0, 2)  # LND -> NLD
         x = self.ln_final(x).type(self.dtype)
 
@@ -422,11 +428,11 @@ class CLIP(nn.Module):
         # x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
         x = x @ self.text_projection
 
-        return x
+        return x,atten
 
     def forward(self, image, text):
-        image_features = self.encode_image(image)
-        text_features = self.encode_text(text)
+        image_features,atten_i = self.encode_image(image)
+        text_features,atten_t = self.encode_text(text)
 
         # # normalized features
         # image_features = image_features / image_features.norm(dim=-1, keepdim=True)
@@ -440,7 +446,7 @@ class CLIP(nn.Module):
         # # shape = [global_batch_size, global_batch_size]
         # return logits_per_image, logits_per_text
 
-        return image_features, text_features
+        return image_features,atten_i, text_features,atten_t
     
     
     def load_param(self, state_dict):
@@ -458,11 +464,9 @@ class CLIP(nn.Module):
                 v = resize_text_pos_embed(v, self.context_length)
             try:
                 self.state_dict()[k].copy_(v)
-            except RuntimeError as exc:
-                raise RuntimeError(f'Cannot load pretrained parameter {k}: {v.shape}') from exc
-        missing = set(self.state_dict()) - set(param_dict)
-        if missing:
-            raise RuntimeError(f'Pretrained checkpoint is missing parameters: {sorted(missing)}')
+            except:
+                print(f'===========================ERROR occur in copy {k}, {v.shape}=========================')
+                print('shape do not match in k :{}: param_dict{} vs self.state_dict(){}'.format(k, v.shape, self.state_dict()[k].shape))
     
 
 

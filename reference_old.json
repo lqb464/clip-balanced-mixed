@@ -1,0 +1,58 @@
+{
+  "source": "results_training_old/tbps/rde/2024-CVPR-RDE/run_logs/RSTPReid/20260922_061328_RDE_TAL+sr0.3_tau0.015_margin0.1_n0.0",
+  "sampler": "identity",
+  "training_config": {
+    "dataset_name": "RSTPReid",
+    "pretrain_choice": "ViT-B/16",
+    "noisy_rate": 0.0,
+    "tau": 0.015,
+    "margin": 0.1,
+    "select_ratio": 0.3,
+    "loss_names": "TAL+sr0.3_tau0.015_margin0.1_n0.0",
+    "batch_size": 64,
+    "num_instance": 4,
+    "num_epoch": 60,
+    "lr_total_epochs": 60,
+    "optimizer": "Adam",
+    "lr": 0.00001,
+    "alpha": 0.9,
+    "beta": 0.999,
+    "weight_decay": 0.00004,
+    "weight_decay_bias": 0.0,
+    "bias_lr_factor": 2.0,
+    "lr_factor": 5.0,
+    "warmup_factor": 0.1,
+    "warmup_epochs": 5,
+    "warmup_method": "linear",
+    "lrscheduler": "cosine",
+    "target_lr": 0.0,
+    "power": 0.9,
+    "temperature": 0.02,
+    "img_size": [384, 128],
+    "stride_size": 16,
+    "text_length": 77,
+    "vocab_size": 49408,
+    "img_aug": true,
+    "txt_aug": true,
+    "num_workers": 8,
+    "test_batch_size": 512,
+    "val_dataset": "test",
+    "eval_period": 1,
+    "milestones": [20, 50]
+  },
+  "best_epoch": 33,
+  "best_R1_during_training": 63.75,
+  "test": {
+    "best": {
+      "BGE": {"R1": 61.10, "R5": 80.75, "R10": 86.50, "mAP": 49.50, "mINP": 27.72},
+      "TSE": {"R1": 61.70, "R5": 80.65, "R10": 87.65, "mAP": 50.04, "mINP": 28.19},
+      "BGE+TSE": {"R1": 63.80, "R5": 81.55, "R10": 87.60, "mAP": 51.47, "mINP": 29.53}
+    },
+    "last": {
+      "BGE": {"R1": 61.55, "R5": 80.50, "R10": 86.05, "mAP": 50.06, "mINP": 28.70},
+      "TSE": {"R1": 61.25, "R5": 80.20, "R10": 86.90, "mAP": 50.61, "mINP": 29.65},
+      "BGE+TSE": {"R1": 63.55, "R5": 81.55, "R10": 87.30, "mAP": 51.87, "mINP": 30.73}
+    }
+  },
+  "selection": "best BGE+TSE R1 on test split; historical one-seed result"
+}

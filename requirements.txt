@@ -5,3 +5,10 @@ Pillow>=10
 ftfy>=6.1
 regex
 tqdm
+scikit-learn>=1.5
+scipy>=1.11
+tensorboard>=2.16
+matplotlib>=3.8
+prettytable>=3.10
+PyYAML>=6
+easydict>=1.13
