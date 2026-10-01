@@ -166,6 +166,11 @@ class BalancedMixedIndexSampler:
     def set_epoch(self, epoch):
         self.epoch = int(epoch)
 
+    def set_negative_index(self, negative_index):
+        if negative_index is not None and negative_index.fingerprint != row_fingerprint(self.rows):
+            raise ValueError("negative index does not match this sampler's rows")
+        self.negative_index = negative_index
+
     def __len__(self):
         return self.length
 
